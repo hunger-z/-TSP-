@@ -13,7 +13,9 @@ public class ACO {
 //    Node first_node;
     int[]next_node;
     int this_node;
-    int Max=1000;
+    int[] result_path;    //起点到终点的路径
+//    int result_length;    //起点到终点的长度
+    private int[] length_array;   //每次迭代得到的最优长度的数组集合
 
     public void init(int[][] map,int ant_count){
         ant_num=ant_count;
@@ -40,6 +42,8 @@ public class ACO {
         }
         bestlength=Integer.MAX_VALUE;
         best_path=new int[node_num+1];
+        result_path=new  int[node_num];
+        length_array=new int[1000];
         //随机放蚂蚁
         for (int i=0;i<ant_count;i++){
             ants[i]=new Ant();
@@ -68,6 +72,7 @@ public class ACO {
     //maxgen ACO的最多循环次数
     //s_node 源点编号
     //d_node 目的点编号
+    //源和目的节点暂时没用上
     public void run(int maxgen,int s_node,int d_node){
 
         for (int runtime=0;runtime<maxgen;runtime++){
@@ -81,13 +86,16 @@ public class ACO {
                 if(ants[i].path_length<bestlength){
                     //保留最优路径
                     bestlength=ants[i].path_length;
+
                     System.out.println("第"+runtime+"代(次迭代)，发现新的最优路径长度："+bestlength);
                        //更新路径
                     for(int j=0;j<node_num+1;j++){
                         best_path[j]=ants[i].path[j];
                     }
                 }
+
             }
+            length_array[runtime]=ants[0].path_length;   //哪一个无所谓，一次迭代下蚂蚁的都一样
             //更新信息素
             UpdateTao();
             //重新设置蚂蚁到起点
@@ -100,15 +108,17 @@ public class ACO {
         System.out.println("最优路径长度是"+bestlength);
         System.out.println("蚁群算法最优路径输出：");
         System.out.print(Arrays.toString(best_path) +">>\n");//输出最优路径
-        for (int i=2;i<4;i++){
-            System.out.println("蚁群算法两点间最优路径输出：");
-            for (int j=0;j<node_num;j++){
-                if(best_path[j]==i){
-                    System.out.print(best_path[i] +">>");//输出两点间最优路径
-
-                }
-            }
-        }
+        System.out.println("蚁群算法每一次迭代最优路径长度输出：");
+        System.out.print(Arrays.toString(length_array) +">>\n");//输出所有最优路径长度
+//        for (int i=2;i<4;i++){
+//            System.out.println("蚁群算法两点间最优路径输出：");
+//            for (int j=0;j<node_num;j++){
+//                if(best_path[j]==i){
+//                    System.out.print(best_path[i] +">>");//输出两点间最优路径
+//
+//                }
+//            }
+//        }
 
 
     }

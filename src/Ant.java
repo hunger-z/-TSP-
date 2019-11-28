@@ -5,6 +5,7 @@ import java.util.Random;
 public class Ant {
     public int[] path;   //节点路径
     public int path_length;   //路径长度
+//    public int that_length;   //除去环的路径长度
     private int node_num;           //节点总数
     public int[] visited;   //取值是0或1，1表示访问过，0表示没访问过
 
@@ -23,7 +24,7 @@ public class Ant {
         double alpha=1.0;
         double beta=2.0;
         double sum=0.0;                  //预选所有路径的信息素浓度之和，由于计算选择概率
-//        int nodes=next_node.length;//邻接节点数量
+//
         int current_node=path[index-1];   //蚂蚁当前所处节点位置
 //        int[] temp=new int[nodes];
 //        for (int i=0;i<nodes;i++){
@@ -86,10 +87,15 @@ public class Ant {
     //计算路径代价
     public void Cal_pathLength(int [][]distance){
         path_length=0;
+//        that_length=0;
 //        path[node_num]=path[0];    //第一个点等于最后一个要到达的点
         for(int i=0;i<node_num;i++){
             path_length+=distance[path[i]][path[i+1]];//计算此时的总代价
         }
+//        for(int i=0;i<node_num-1;i++){
+//           that_length+=distance[path[i]][path[i+1]];//计算此时的总代价
+//        }
+
 
     }
     //初始化蚂蚁子，把他们全扔起点去
