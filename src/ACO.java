@@ -7,8 +7,10 @@ public class ACO {
     public int [][]distance;     //节点间代价
     double [][]tao;             //信息素矩阵
     int node_num;              //节点数量
+//    public int[] best_path;   //最佳路径
     public ArrayList<Integer> best_node_path;    //两点间的路径
     int node_path_bestlength;            //两点间的最优解的长度
+//    int bestlength;          //求的最优解的长度
     int[] node;                 //节点
     int current_node;           //当前节点
 
@@ -17,19 +19,18 @@ public class ACO {
 
     private int[] length_array;   //每次迭代得到的最优长度的数组集合
 
-    public void init(int[][] map,int ant_count){
+    public void init(int[][] map,int ant_count,int max_gen){
         ant_num=ant_count;
         ants=new Ant[ant_num];
-        node=new int[5];
-        node_num=5;
+        node=new int[map.length];
+        node_num=map.length;
         current_node=0;
         distance=new int[node_num][node_num];
         for (int i=0;i<map.length;i++){
 
             node[i]=i;
-            for(int j=0;j<map.length;j++){
-                distance[i][j]=map[i][j];     //距离
-            }
+            //距离
+            System.arraycopy(map[i], 0, distance[i], 0, map.length);
         }
 
         //初始化信息素矩阵
@@ -39,11 +40,12 @@ public class ACO {
                 tao[i][j]=0.1;
             }
         }
-
+//        bestlength=Integer.MAX_VALUE;
+//        best_path=new int[node_num];
         best_node_path=new ArrayList<>();
         node_path_bestlength=Integer.MAX_VALUE;
 
-        length_array=new int[1000];
+        length_array=new int[max_gen];
         //放蚂蚁
         for (int i=0;i<ant_count;i++){
             ants[i]=new Ant();
@@ -64,7 +66,9 @@ public class ACO {
         }
         //信息素更新，
         for(int i=0;i<ant_num;i++){
-
+//            for (int j=0;j<node_num-1;j++){
+//                tao[ants[i].path[j]][ants[i].path[j+1]]+=1.0/ants[i].path_length;
+//            }
             for (int j=0;j<ants[i].node_path.size()-1;j++){
                 tao[ants[i].node_path.get(j)][ants[i].node_path.get(j+1)]+=1.0/ants[i].node_path_length;
             }
@@ -79,9 +83,13 @@ public class ACO {
         for (int runtime=0;runtime<maxgen;runtime++){
             //每次迭代，所有蚂蚁都要跟新一遍，走一遍
             for (int i=0;i<ant_num;i++){
+
+//                for (int j=1;j<node_num;j++){
+//                    ants[i].SelectNextNode(j,tao,distance,s_node,d_node); //每只蚂蚁的城市规划
+//                }
                 current_node=0;
                 while (current_node!=node_num-1){
-//                    ants[i].SelectNode(tao,distance,current_node);
+
                       ants[i].SelectNode(tao,distance,current_node);
                       current_node=ants[i].getCurrent_node();
                 }
@@ -108,7 +116,6 @@ public class ACO {
         }
     }
     public void ReportResult(){
-
         System.out.println("最优路径长度是"+node_path_bestlength);
         System.out.println("蚁群算法最优路径输出：");
         System.out.print(best_node_path +">>\n");//输出最优路径
