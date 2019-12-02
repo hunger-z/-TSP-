@@ -1,6 +1,6 @@
-import java.lang.reflect.Array;
+
 import java.util.ArrayList;
-import java.util.Random;
+
 
 public class Ant {
 
@@ -9,6 +9,8 @@ public class Ant {
     private int node_num;           //节点总数
     public int[] visited;   //取值是0或1，1表示访问过，0表示没访问过
     private int c_node;
+    private double last_load;   //剩余需卸载的量
+
 
 
     //index，该选择第index个节点
@@ -17,23 +19,26 @@ public class Ant {
     //distance  全局的距离矩阵信息
     //select_node 当前位置
 
-    public void SelectNode(double[][]tao,int[][]distance,int select_node){
+    public void SelectNode(double[][]tao,int[][]distance,int select_node,double[] load){
 
         //计算选中概率所需系数
         double[] possibility;
         possibility=new double[node_num];
-        double alpha=0.5;
-        double beta=2.5;
+        double alpha=1.8;
+        double beta=0.5;
         double sum=0.0;                  //预选所有路径的信息素浓度之和，由于计算选择概率
-        double test_tao=0.0;
-
+//        double test_tao=0.0;
+        double load_proportion=last_load+1;          //乘在距离上的剩余算力系数
+        if(last_load<=0){
+            last_load=0;
+        }
         for(int i=0;i<node_num;i++){
-            test_tao=(Math.pow(tao[select_node][i],alpha)*
-                    Math.pow(1.0/distance[select_node][i],beta));
+//            test_tao=(Math.pow(tao[select_node][i],alpha)*
+//                    Math.pow(1.0/distance[select_node][i],beta));
             if(visited[i]==0){           //只在还没走过的节点中选择，根据信息素浓度作为下一个
 
                 sum+=(Math.pow(tao[select_node][i],alpha)*
-                        Math.pow(1.0/distance[select_node][i],beta));
+                        Math.pow(1.0/distance[select_node][i]*load_proportion,beta));
             }
         }
         //计算每个节点被选中的概率
@@ -43,14 +48,11 @@ public class Ant {
                 possibility[i]=0.0;   //已经过节点，选中概率就是0
             }else {
                 possibility[i]=(Math.pow(tao[select_node][i],alpha)*
-                        Math.pow(1.0/distance[select_node][i],beta))/sum;
+                        Math.pow(1.0/(distance[select_node][i]*load_proportion),beta))/sum;
             }
         }
-        long r1=System.currentTimeMillis();    //获取当前时间作为种子
-//        Random random=new Random(r1);
-//        double random_node=random.nextDouble()+0.5;
 
-        double random_node=Math.random();
+        double random_node=Math.random()*1.5;
         //为了增加随机性，不采用轮盘赌
 //        double sum_possibility=0;
         int select=-1;         //初始化被选中的节点为-1
@@ -70,20 +72,17 @@ public class Ant {
 //        }
         while (select==-1){
             for (int i=0;i<node_num;i++){
-//                if(visited[i]==0){                   //可以不要，走过的possibility为0
-////                    sum_possibility+=possibility[i];
-////                    if(possibility[i]>=random_node){
-////                        select=i;
-////                        break;
-////                    }
-////                }
-
                 if(possibility[i]>=random_node){
                     select=i;
+                    if(last_load>0){
+                        last_load-=load[i];
+                    }else {
+                        last_load=0;
+                    }
                     break;
                 }
             }
-            random_node=Math.random();    //如果没跳出来再随机一次
+            random_node=Math.random()*1.5;    //如果没跳出来再随机一次
         }
 //        if(select==-1)
 //            System.out.println("Fa♂！！！");
@@ -109,6 +108,7 @@ public class Ant {
     //初始化蚂蚁子，把他们全扔起点去
     public void RandomSelect(int node_count){
         node_num=node_count;
+        last_load=1.0;    //初始需卸载的量为1
 
         visited=new int[node_num];
 

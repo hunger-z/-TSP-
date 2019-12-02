@@ -7,5 +7,14 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://D:/临时文件/Matplotlib-3D-for-Java-master/Matplotlib-3D-for-Java-master/Matplotlib_3d_4j_sydh_V2.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

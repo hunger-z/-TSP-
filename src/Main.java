@@ -1,3 +1,4 @@
+
 public class Main {
 
     public static void main(String[] args){
@@ -7,7 +8,8 @@ public class Main {
         int node_num=50;
         create_map=new Create_Map();
         int Max=1000;
-        int max_gen=10;                //迭代次数
+        int max_gen=100;                //迭代次数
+
 
 
         int[][] G2=new int[][]{
@@ -19,9 +21,12 @@ public class Main {
                 };
         create_map.Map_Create(node_num);
         int[][] G;
+        double[] G_load;
         G=create_map.getMap();
+        create_map.ProductLoad(node_num);
+        G_load=create_map.getMap_load();
         create_map.Show_Map();
-        aco.init(G,100,max_gen);
+        aco.init(G,G_load,100,max_gen);
         aco.run(max_gen);
         aco.ReportResult();
         create_map.Show_Map();
